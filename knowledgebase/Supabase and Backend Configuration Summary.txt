@@ -1,0 +1,173 @@
+# Supabase and Backend Configuration Summary - VERIFIED
+
+This document outlines the current Supabase configuration and backend requirements for the Interactive Podcasting Platform as verified on 1st June 2025. All information has been confirmed through direct Supabase API inspection.
+
+## 1. Current Supabase Configuration - ✅ VERIFIED
+
+### Project Setup
+* **Project Name:** "Podcast Platform"
+* **Project ID:** `ejsiiuhtvnuubljvwkrm`
+* **Region:** `eu-central-1`
+* **Status:** `ACTIVE_HEALTHY`
+* **Database:** PostgreSQL v15.8.1.094
+* **Created:** 31st May 2025
+
+### Environment Variables
+The following Supabase-related environment variables are configured in the project's `.env.local` file:
+* `NEXT_PUBLIC_SUPABASE_URL`: The URL for the Supabase project
+* `NEXT_PUBLIC_SUPABASE_ANON_KEY`: The public anonymous key for client-side Supabase interactions
+* `SUPABASE_SERVICE_ROLE_KEY`: The secret service role key for backend operations requiring elevated privileges
+
+Other environment variables also present in `.env.local` for related services include `GOOGLE_API_KEY`, `REDIS_HOST`, `REDIS_PORT`, and `NEXT_PUBLIC_SOCKET_URL`.
+
+### Database Schema - ✅ VERIFIED
+The PostgreSQL database within Supabase has been configured with the following schema:
+
+#### **Tables Created:**
+* **`public.profiles`** - ✅ Confirmed
+  * Stores public user profile information, linked one-to-one with `auth.users`
+  * Columns: `id` (uuid, PK), `email` (text, unique), `name` (text), `created_at` (timestamptz), `updated_at` (timestamptz)
+  * **Relationship:** `profiles.id` → `auth.users.id`
+
+* **`public.documents`** - ✅ Confirmed with additional fields
+  * Stores metadata about user-uploaded source documents for podcasts
+  * Columns: `id` (uuid, PK), `user_id` (uuid), `original_name` (text), `storage_path` (text), `gemini_file_id` (text), `gemini_file_uri` (text), `status` (text), `created_at` (timestamptz), `updated_at` (timestamptz)
+  * **Additional fields found:** `bucket_id` (text), `gemini_file_state` (text)
+  * **Relationship:** `documents.user_id` → `auth.users.id`
+
+* **`public.podcasts`** - ✅ Confirmed
+  * Stores information about generated podcasts, including scripts, audio file references, and generation status
+  * Columns: `id` (uuid, PK), `user_id` (uuid), `document_id` (uuid, unique), `title` (text), `steering_prompt` (text), `script` (jsonb), `audio_storage_path` (text), `audio_public_url` (text), `audio_duration` (integer), `language` (text, default 'en'), `status` (text), `error_message` (text), `share_token` (text, unique), `created_at` (timestamptz), `updated_at` (timestamptz)
+  * **Relationships:** `podcasts.user_id` → `auth.users.id`, `podcasts.document_id` → `documents.id`
+
+* **`public.interactive_sessions`** - ✅ Confirmed
+  * Stores details related to interactive Q&A sessions for podcasts
+  * Columns: `id` (uuid, PK), `podcast_id` (uuid), `user_id` (uuid), `gemini_live_session_id` (text), `transcript` (jsonb[]), `started_at` (timestamptz), `ended_at` (timestamptz), `created_at` (timestamptz), `updated_at` (timestamptz)
+  * **Relationships:** `interactive_sessions.user_id` → `auth.users.id`, `interactive_sessions.podcast_id` → `podcasts.id`
+
+#### **Row Level Security (RLS) - ✅ VERIFIED**
+* RLS is **enabled** on all four main tables (`profiles`, `documents`, `podcasts`, `interactive_sessions`)
+* **Comprehensive policies verified:**
+  * **SELECT policies:** Users can view their own data (`auth.uid() = user_id` pattern)
+  * **INSERT policies:** Users can create their own records
+  * **UPDATE policies:** Users can modify their own records
+  * **DELETE policies:** Users can delete their own records
+* **Special document policy:** Upload restriction to authenticated users in their own folders
+
+#### **PostgreSQL Function - ✅ VERIFIED**
+* **`public.create_user_profile(new_user_id uuid)`** - Function exists and documented
+  * **Purpose:** Populates the `public.profiles` table with new user details from `auth.users`
+  * **Usage:** Called via RPC after successful user signup
+  * **Return type:** void
+
+#### **Storage Configuration - ✅ VERIFIED**
+* **`documents` bucket** exists and configured as private
+* Storage policies in place for secure document handling
+
+#### **Migration History - ✅ VERIFIED**
+* **Latest migration:** `20250601054536_add_gemini_file_state_to_documents`
+* Indicates active development and schema evolution
+
+## 2. Current Implementation Status - Based on Project Structure
+
+### Phase 0: Foundational Setup - ✅ LARGELY COMPLETE
+* **Next.js Project:** Initialised with TypeScript, Tailwind CSS, and shadcn/ui components
+* **Supabase Integration:** Client, server, and middleware configurations in place
+* **Authentication System:** Complete auth flow implemented
+  * Login (`/auth/login`)
+  * Sign-up (`/auth/sign-up`) 
+  * Password reset (`/auth/forgot-password`)
+  * Update password (`/auth/update-password`)
+  * Email confirmation (`/auth/confirm`)
+  * Success and error pages
+* **UI Components:** Core shadcn/ui components installed (button, card, input, label, progress, textarea)
+* **Protected Routes:** Middleware and protected page structure implemented
+
+### Phase 1: Core Podcast Generation - 🚧 IN PROGRESS
+* **Document Upload Interface:** Upload page created (`/upload`)
+* **API Infrastructure:** Process document API route started (`/api/process-document`)
+* **Authentication Components:** Multiple auth forms and managers implemented
+
+### Discovered Backend Requirements
+
+#### Database Interaction and Schema Dependency
+* The backend's core functionality is fundamentally dependent on the verified Supabase PostgreSQL database schema
+* All backend services must perform CRUD operations on the defined tables while respecting RLS policies
+* Service-level operations using `SUPABASE_SERVICE_ROLE_KEY` must be used judiciously to bypass RLS when necessary
+
+#### User Authentication (Leveraging Supabase Auth) - ✅ IMPLEMENTED
+* User registration and login (email/password) - **Complete**
+* Session management via Supabase client libraries and JWTs - **Complete**
+* Password reset functionality - **Complete**
+* **Critical Action Required:** Application must call `create_user_profile(uuid)` function after successful user signup
+
+#### Document Management Service - 🚧 PARTIALLY IMPLEMENTED
+* File upload interface exists but requires completion
+* Must implement:
+  * Client-side direct upload to Supabase Storage `documents` bucket
+  * Backend trigger after successful upload
+  * File transfer from Supabase Storage to Google Gemini Files API
+  * Metadata record creation in `documents` table
+  * Background job initiation for podcast generation
+
+#### Podcast Generation Service - ⏳ PENDING
+* Requires BullMQ worker implementation for:
+  * Content analysis using Google Gemini generative models
+  * Script generation and storage in `podcasts` table
+  * Text-to-Speech processing via Gemini TTS API
+  * Status management and error handling
+
+#### Audio Processing & Storage Service - ⏳ PENDING
+* Must handle:
+  * Audio file upload to Supabase Storage
+  * Podcast metadata updates
+  * Duration calculation and URL generation
+
+#### Interactive Session Service - ⏳ PENDING
+* Requires separate Node.js service with Socket.io
+* Google Gemini Live API integration
+* Real-time audio streaming capabilities
+
+#### API Layer - 🚧 PARTIALLY IMPLEMENTED
+* Next.js API routes structure established
+* Process document endpoint created but needs completion
+* Additional endpoints required for podcast management
+
+## 3. Security Considerations - ✅ VERIFIED
+
+### API Key Management
+* `GOOGLE_API_KEY` and `SUPABASE_SERVICE_ROLE_KEY` must remain server-side only
+* Client-safe keys (`NEXT_PUBLIC_*`) properly identified
+
+### Authentication & Authorization
+* Supabase Auth integration complete
+* RLS policies comprehensively implemented and verified
+* Service role key usage must be carefully controlled
+
+### File Upload Security
+* Supabase Storage policies in place
+* Additional validation required for MIME types and file sizes
+
+## 4. Next Steps and Recommendations
+
+### Immediate Priorities:
+1. **Complete document upload workflow** in `/upload` page
+2. **Implement `create_user_profile()` function call** in signup flow
+3. **Finish `/api/process-document` endpoint** for Gemini Files API integration
+4. **Set up BullMQ infrastructure** for background job processing
+5. **Create additional API endpoints** for podcast management
+
+### Infrastructure Setup Required:
+1. **Redis instance** for BullMQ job queue
+2. **Background worker processes** for podcast generation
+3. **Socket.io server** for interactive features
+4. **Google Gemini API integration** across all services
+
+### Database Enhancements:
+* The additional fields (`bucket_id`, `gemini_file_state`) in the documents table suggest good forward-thinking
+* Consider adding indexes for frequently queried columns
+* Monitor query performance as the application scales
+
+## 5. Conclusion
+
+The foundational infrastructure is solid and correctly implemented. The Supabase configuration matches the architectural requirements perfectly, with comprehensive security measures in place. The current project structure shows significant progress through Phase 0 and early Phase 1, positioning the project well for the next development phases focused on core podcast generation functionality.

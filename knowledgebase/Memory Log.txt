@@ -1,0 +1,68 @@
+# Interactive Podcasting Platform - Development Log
+
+## Phase 0: Foundational Setup (Week 1) - COMPLETED
+**Status:** Completed
+
+**Completed Steps:**
+* **1. Project Initialisation:**
+    * Created Next.js frontend & API (podcast-platform).
+    * Initialised shadcn/ui and added initial components.
+    * Installed core and backend-specific dependencies.
+    * Pushed initial setup to GitHub.
+* **2. Supabase Project Setup:**
+    * Created a new project on supabase.com.
+    * Obtained Project URL and API keys (anon and service_role).
+* **3. Environment Configuration (.env.local):**
+    * Added Supabase URL and keys.
+    * Added Google API Key.
+    * Added placeholder Redis and Socket.io server configurations.
+    * Ensured .env.local is in .gitignore.
+* **4. Database Schema Setup (via Supabase Studio SQL Editor):**
+    * Defined and created tables (`profiles`, `documents`, `podcasts`, `interactive_sessions`) as per the architecture document (Section 7) and subsequent modifications.
+    * Set up columns, data types, primary keys, and foreign keys.
+    * Enabled RLS on tables and created policies for user data management.
+    * Created `public.create_user_profile(new_user_id uuid)` PostgreSQL function to be called by the application post-signup.
+* **5. Basic Landing Page Structure & Supabase Client Initialisation:**
+    * Created a basic structure for the landing page.
+    * Initialised the Supabase client in the Next.js application.
+* **6. Setup User Authentication using Supabase Auth:**
+    * Implemented login, signup, logout flows using `@supabase/supabase-js`.
+    * Integrated the call to `public.create_user_profile(uuid)` RPC after successful signup.
+    * **Committed Phase 0 changes to GitHub.**
+
+---
+
+## Phase 1: Core Podcast Generation (Weeks 2-4)
+
+**Current Step:**
+* **1. Document Upload Interface (`app/upload/page.tsx` & API route/Edge Function):**
+    * **Frontend UI (`app/upload/page.tsx`):**
+        * **DONE:** Implement UI.
+    * **Frontend Client-Side Logic (`app/upload/page.tsx`):**
+        * **DONE:** Implement direct upload to Supabase Storage.
+    * **Backend Trigger & API Route (`app/api/process-document/route.ts`):**
+        * **DONE:** API route created and called.
+    * **Backend API route logic (`app/api/process-document/route.ts`):**
+        * **DONE:** Authenticate the user server-side.
+        * **DONE:** Retrieve the uploaded file from Supabase Storage.
+        * **DONE:** Upload the retrieved file to Google Gemini Files API and wait for processing.
+        * **DONE:** Create a metadata record in the Supabase `public.documents` table.
+        * **IN PROGRESS:** Add a job to BullMQ for script generation (passing `documentId` and `steering_prompt`).
+
+**Next Steps (Phase 1):**
+* **1. Document Upload Interface (Continued):**
+    * **Backend API route logic (`app/api/process-document/route.ts`):**
+        * **Verify BullMQ job queuing.**
+* **2. Content Analysis & Script Generation (BullMQ Worker):**
+    * Set up a BullMQ worker service.
+    * Worker retrieves job data (documentId, steeringPrompt).
+    * Worker fetches document details (Gemini URI) from Supabase `documents` table.
+    * Worker uses Gemini generative model to analyse content and generate script.
+    * Worker saves generated script to Supabase `podcasts` table.
+    * Worker updates status in `podcasts` and/or `documents` table.
+
+---
+
+## Memory Update:
+* (Existing) In Next.js 15+, `cookies()` from `next/headers` is async.
+* (New) Current Google AI SDK for Node.js is `@google/genai` (v1.3.0).

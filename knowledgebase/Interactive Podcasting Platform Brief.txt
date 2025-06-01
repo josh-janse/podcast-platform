@@ -1,0 +1,75 @@
+# Interactive Podcasting Platform Brief
+
+## Overview
+A platform that enables users to host and share interactive podcasts with AI co-hosts. Users can upload source content which AI hosts will discuss in a conversational format, while listeners can join the conversation to ask questions and receive answers based on the source material.
+
+## Core Features
+
+### Podcast Creation
+1. Upload source materials (articles, documents, research papers)
+2. Generate an interactive podcast where two AI hosts discuss the key points
+3. Customize discussion topics with a steering prompt (up to 500 characters)
+4. Generation takes several minutes - users can perform other tasks during this time
+
+### Interactive Listening Experience
+1. Standard listening mode for regular podcast consumption
+2. Interactive mode where listeners can:
+   - Join the conversation with a tap of a button
+   - Ask questions directly to the AI hosts
+   - Receive personalized answers based on source materials
+   - Return to the original podcast after their question is answered
+
+### Sharing & Distribution
+1. Generate shareable public links for podcasts
+2. Download podcasts for offline sharing
+3. Embed podcasts on websites and social media
+
+### Language Support
+1. Multi-language podcast generation (initially prioritize English)
+2. Set default language in user settings
+3. Option to generate translations of existing podcasts
+
+## Technical Requirements
+
+### Frontend
+- Next.js with shadcn/ui components
+- Responsive design for mobile and desktop
+- Audio player with interactive controls
+- Upload interface for source materials
+
+### Backend
+- Node.js server for handling podcast management
+- AI integration for generating podcast content and handling interactive questions
+- Audio processing capabilities
+- Storage solution for source materials and generated podcasts
+
+### AI Components
+- Text analysis of source materials
+- Natural-sounding voice synthesis for multiple AI hosts
+- Real-time question processing during interactive sessions
+- Content accuracy verification
+
+## User Experience Flow
+
+1. **Create Podcast**: Upload source materials and optionally add steering prompt
+2. **Wait for Generation**: Backend processes materials and generates podcast
+3. **Listen/Share**: Play podcast, enable interactive mode, or share with others
+4. **Interact**: Join conversation to ask questions when in interactive mode
+
+## Limitations & Considerations
+
+- AI-generated voices may have occasional glitches
+- Generation time depends on source material length and complexity
+- Voice interactions not stored for privacy reasons
+- Shared podcasts only available in standard (non-interactive) mode
+- Need to ensure content accuracy from source materials
+
+## Future Enhancements
+
+- Community features for discovering popular podcasts
+- Analytics for podcast creators
+- Multiple voice options for AI hosts
+- Transcription and searchable podcast content
+- Integration with major podcast distribution platforms
+
+This platform would enable anyone to create engaging, interactive podcast-like content without the typical overhead of podcast production, while allowing listeners to participate in the discussion and gain deeper insights through direct questioning.

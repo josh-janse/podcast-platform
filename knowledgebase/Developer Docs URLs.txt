@@ -1,0 +1,25 @@
+Google AI:
+
+Speech generation (text-to-speech): https://ai.google.dev/gemini-api/docs/speech-generation
+
+Live API: https://ai.google.dev/gemini-api/docs/live
+
+Files API: https://ai.google.dev/gemini-api/docs/files
+
+Understand and count tokens: https://ai.google.dev/gemini-api/docs/tokens?lang=python
+
+Embeddings: https://ai.google.dev/gemini-api/docs/embeddings
+
+Context Caching: https://ai.google.dev/gemini-api/docs/caching?lang=python
+
+Prompt design strategies: https://ai.google.dev/gemini-api/docs/prompting-strategies
+
+Document understanding: https://ai.google.dev/gemini-api/docs/document-processing?lang=python
+
+Pricing: https://ai.google.dev/gemini-api/docs/pricing
+
+Rate limits: https://ai.google.dev/gemini-api/docs/rate-limits
+
+All models: https://ai.google.dev/gemini-api/docs/models
+
+API Keys: https://ai.google.dev/gemini-api/docs/api-key#macos---zsh
