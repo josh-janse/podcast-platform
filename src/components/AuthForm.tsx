@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from 'react';
-import { createClient } from '@/lib/supabaseClient'; // Adjust path if needed
+import { createClient } from '@/lib/supabase/client'; // Adjust path if needed
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";

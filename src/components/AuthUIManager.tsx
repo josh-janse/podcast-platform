@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { User } from '@supabase/supabase-js';
-import { createClient } from '@/lib/supabaseClient'; // Your Supabase client initialization
+import { createClient } from '@/lib/supabase/client'; // Your Supabase client initialization
 import Link from 'next/link';
 import LogoutButton from './LogoutButton'; // Assuming you have this component
 

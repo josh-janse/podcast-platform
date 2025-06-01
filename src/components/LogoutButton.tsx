@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation'; // For client-side navigation in App Router
-import { createClient } from '@/lib/supabaseClient'; // Adjust path if needed
+import { createClient } from '@/lib/supabase/client'; // Adjust path if needed
 import { Button } from "@/components/ui/button";
 import { useState } from 'react';
 
