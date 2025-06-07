@@ -32,34 +32,51 @@
 
 ---
 
-## Phase 1: Core Podcast Generation (Weeks 2-4)
+## Phase 1: Core Podcast Generation (Weeks 2-4) - COMPLETED
 
-**Current Step:**
+**Status:** Completed on Saturday, June 7, 2025.
+
+**Completed Steps:**
 * **1. Document Upload Interface (`app/upload/page.tsx` & API route/Edge Function):**
-    * **Frontend UI (`app/upload/page.tsx`):**
-        * **DONE:** Implement UI.
-    * **Frontend Client-Side Logic (`app/upload/page.tsx`):**
-        * **DONE:** Implement direct upload to Supabase Storage.
-    * **Backend Trigger & API Route (`app/api/process-document/route.ts`):**
-        * **DONE:** API route created and called.
-    * **Backend API route logic (`app/api/process-document/route.ts`):**
-        * **DONE:** Authenticate the user server-side.
-        * **DONE:** Retrieve the uploaded file from Supabase Storage.
-        * **DONE:** Upload the retrieved file to Google Gemini Files API and wait for processing.
-        * **DONE:** Create a metadata record in the Supabase `public.documents` table.
-        * **IN PROGRESS:** Add a job to BullMQ for script generation (passing `documentId` and `steering_prompt`).
-
-**Next Steps (Phase 1):**
-* **1. Document Upload Interface (Continued):**
-    * **Backend API route logic (`app/api/process-document/route.ts`):**
-        * **Verify BullMQ job queuing.**
+   * **Frontend UI (`app/upload/page.tsx`):**
+       * **DONE:** Implement UI.
+   * **Frontend Client-Side Logic (`app/upload/page.tsx`):**
+       * **DONE:** Implement direct upload to Supabase Storage.
+   * **Backend Trigger & API Route (`app/api/process-document/route.ts`):**
+       * **DONE:** API route created and called.
+   * **Backend API route logic (`app/api/process-document/route.ts`):**
+       * **DONE:** Authenticate the user server-side.
+       * **DONE:** Retrieve the uploaded file from Supabase Storage.
+       * **DONE:** Upload the retrieved file to Google Gemini Files API and wait for processing.
+       * **DONE:** Create a metadata record in the Supabase `public.documents` table.
+       * **DONE:** Add a job to BullMQ for script generation (passing `documentId` and `steering_prompt`).
+       * **DONE:** Verify BullMQ job queuing.
 * **2. Content Analysis & Script Generation (BullMQ Worker):**
-    * Set up a BullMQ worker service.
-    * Worker retrieves job data (documentId, steeringPrompt).
-    * Worker fetches document details (Gemini URI) from Supabase `documents` table.
-    * Worker uses Gemini generative model to analyse content and generate script.
-    * Worker saves generated script to Supabase `podcasts` table.
-    * Worker updates status in `podcasts` and/or `documents` table.
+   * **DONE:** Set up a BullMQ worker service (`src/workers/podcastGenerationWorker.js`).
+   * **DONE:** Worker retrieves job data (documentId, steeringPrompt, userId, originalName).
+   * **DONE:** Worker fetches document details (Gemini URI) from Supabase `documents` table.
+   * **DONE:** Worker uses Gemini generative model (2.5 Flash) to analyse content and generate script.
+   * **DONE:** Worker saves generated script to Supabase `podcasts` table.
+   * **DONE:** Worker updates status in `documents` table to 'SCRIPT_GENERATION_COMPLETE'.
+   * **DONE:** Worker implements automatic Gemini file cleanup after successful script generation.
+   * **DONE:** Worker includes error-path cleanup to prevent orphaned files when jobs fail.
+
+**Notes:**
+* Using Google's latest `gemini-2.5-flash-preview-04-17` model for optimal price-performance ratio and built-in thinking capabilities.
+* Gemini file cleanup is now handled automatically by the worker in both success and error scenarios.
+* **TODO:** Implement scheduled cron job for cleaning orphaned Gemini files as a safety net (recommended: daily/weekly cleanup of files older than 7-30 days).
+* Worker is production-ready and successfully generating high-quality podcast scripts with proper conversational formatting.
+* End-to-end pipeline from document upload to script generation is fully functional.
+
+**(Preview) Next Phase:**
+* **Phase 2: Audio Synthesis & Basic Playback (Weeks 5-7):**
+    * **Next up:** Set up a new BullMQ queue/worker for Text-to-Speech (TTS) processing.
+    * The TTS worker will take a `podcastId` as input.
+    * It will fetch the script from the `podcasts` table.
+    * It will call the Gemini TTS API to synthesize the audio.
+    * It will save the generated audio file to a new Supabase Storage bucket (e.g., `podcasts-audio`).
+    * It will update the `podcasts` table with the audio file URL and other metadata (e.g., duration).
+    * A basic audio player component will be created in the frontend to play the generated podcast.
 
 ---
 
