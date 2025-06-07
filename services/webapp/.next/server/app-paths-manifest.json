@@ -1,0 +1,6 @@
+{
+  "/protected/page": "app/protected/page.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/upload/page": "app/upload/page.js",
+  "/page": "app/page.js"
+}

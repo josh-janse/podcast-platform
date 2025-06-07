@@ -5,30 +5,30 @@
 
 **Completed Steps:**
 * **1. Project Initialisation:**
-    * Created Next.js frontend & API (podcast-platform).
-    * Initialised shadcn/ui and added initial components.
-    * Installed core and backend-specific dependencies.
-    * Pushed initial setup to GitHub.
+    * Created Next.js frontend & API (podcast-platform).
+    * Initialised shadcn/ui and added initial components.
+    * Installed core and backend-specific dependencies.
+    * Pushed initial setup to GitHub.
 * **2. Supabase Project Setup:**
-    * Created a new project on supabase.com.
-    * Obtained Project URL and API keys (anon and service_role).
+    * Created a new project on supabase.com.
+    * Obtained Project URL and API keys (anon and service_role).
 * **3. Environment Configuration (.env.local):**
-    * Added Supabase URL and keys.
-    * Added Google API Key.
-    * Added placeholder Redis and Socket.io server configurations.
-    * Ensured .env.local is in .gitignore.
+    * Added Supabase URL and keys.
+    * Added Google API Key.
+    * Added placeholder Redis and Socket.io server configurations.
+    * Ensured .env.local is in .gitignore.
 * **4. Database Schema Setup (via Supabase Studio SQL Editor):**
-    * Defined and created tables (`profiles`, `documents`, `podcasts`, `interactive_sessions`) as per the architecture document (Section 7) and subsequent modifications.
-    * Set up columns, data types, primary keys, and foreign keys.
-    * Enabled RLS on tables and created policies for user data management.
-    * Created `public.create_user_profile(new_user_id uuid)` PostgreSQL function to be called by the application post-signup.
+    * Defined and created tables (`profiles`, `documents`, `podcasts`, `interactive_sessions`) as per the architecture document (Section 7) and subsequent modifications.
+    * Set up columns, data types, primary keys, and foreign keys.
+    * Enabled RLS on tables and created policies for user data management.
+    * Created `public.create_user_profile(new_user_id uuid)` PostgreSQL function to be called by the application post-signup.
 * **5. Basic Landing Page Structure & Supabase Client Initialisation:**
-    * Created a basic structure for the landing page.
-    * Initialised the Supabase client in the Next.js application.
+    * Created a basic structure for the landing page.
+    * Initialised the Supabase client in the Next.js application.
 * **6. Setup User Authentication using Supabase Auth:**
-    * Implemented login, signup, logout flows using `@supabase/supabase-js`.
-    * Integrated the call to `public.create_user_profile(uuid)` RPC after successful signup.
-    * **Committed Phase 0 changes to GitHub.**
+    * Implemented login, signup, logout flows using `@supabase/supabase-js`.
+    * Integrated the call to `public.create_user_profile(uuid)` RPC after successful signup.
+    * **Committed Phase 0 changes to GitHub.**
 
 ---
 
@@ -38,28 +38,28 @@
 
 **Completed Steps:**
 * **1. Document Upload Interface (`app/upload/page.tsx` & API route/Edge Function):**
-   * **Frontend UI (`app/upload/page.tsx`):**
-       * **DONE:** Implement UI.
-   * **Frontend Client-Side Logic (`app/upload/page.tsx`):**
-       * **DONE:** Implement direct upload to Supabase Storage.
-   * **Backend Trigger & API Route (`app/api/process-document/route.ts`):**
-       * **DONE:** API route created and called.
-   * **Backend API route logic (`app/api/process-document/route.ts`):**
-       * **DONE:** Authenticate the user server-side.
-       * **DONE:** Retrieve the uploaded file from Supabase Storage.
-       * **DONE:** Upload the retrieved file to Google Gemini Files API and wait for processing.
-       * **DONE:** Create a metadata record in the Supabase `public.documents` table.
-       * **DONE:** Add a job to BullMQ for script generation (passing `documentId` and `steering_prompt`).
-       * **DONE:** Verify BullMQ job queuing.
+   * **Frontend UI (`app/upload/page.tsx`):**
+       * **DONE:** Implement UI.
+   * **Frontend Client-Side Logic (`app/upload/page.tsx`):**
+       * **DONE:** Implement direct upload to Supabase Storage.
+   * **Backend Trigger & API Route (`app/api/process-document/route.ts`):**
+       * **DONE:** API route created and called.
+   * **Backend API route logic (`app/api/process-document/route.ts`):**
+       * **DONE:** Authenticate the user server-side.
+       * **DONE:** Retrieve the uploaded file from Supabase Storage.
+       * **DONE:** Upload the retrieved file to Google Gemini Files API and wait for processing.
+       * **DONE:** Create a metadata record in the Supabase `public.documents` table.
+       * **DONE:** Add a job to BullMQ for script generation (passing `documentId` and `steering_prompt`).
+       * **DONE:** Verify BullMQ job queuing.
 * **2. Content Analysis & Script Generation (BullMQ Worker):**
-   * **DONE:** Set up a BullMQ worker service (`src/workers/podcastGenerationWorker.js`).
-   * **DONE:** Worker retrieves job data (documentId, steeringPrompt, userId, originalName).
-   * **DONE:** Worker fetches document details (Gemini URI) from Supabase `documents` table.
-   * **DONE:** Worker uses Gemini generative model (2.5 Flash) to analyse content and generate script.
-   * **DONE:** Worker saves generated script to Supabase `podcasts` table.
-   * **DONE:** Worker updates status in `documents` table to 'SCRIPT_GENERATION_COMPLETE'.
-   * **DONE:** Worker implements automatic Gemini file cleanup after successful script generation.
-   * **DONE:** Worker includes error-path cleanup to prevent orphaned files when jobs fail.
+   * **DONE:** Set up a BullMQ worker service (`src/workers/podcastGenerationWorker.js`).
+   * **DONE:** Worker retrieves job data (documentId, steeringPrompt, userId, originalName).
+   * **DONE:** Worker fetches document details (Gemini URI) from Supabase `documents` table.
+   * **DONE:** Worker uses Gemini generative model (2.5 Flash) to analyse content and generate script.
+   * **DONE:** Worker saves generated script to Supabase `podcasts` table.
+   * **DONE:** Worker updates status in `documents` table to 'SCRIPT_GENERATION_COMPLETE'.
+   * **DONE:** Worker implements automatic Gemini file cleanup after successful script generation.
+   * **DONE:** Worker includes error-path cleanup to prevent orphaned files when jobs fail.
 
 **Notes:**
 * Using Google's latest `gemini-2.5-flash-preview-04-17` model for optimal price-performance ratio and built-in thinking capabilities.
@@ -68,15 +68,26 @@
 * Worker is production-ready and successfully generating high-quality podcast scripts with proper conversational formatting.
 * End-to-end pipeline from document upload to script generation is fully functional.
 
+**Codebase Restructure:**
+* **DONE:** Migrated project from `npm` to `pnpm` to better support a monorepo architecture.
+* **DONE:** Refactored the codebase into a monorepo structure with clearly separated services.
+    * `/services/webapp`: Contains the Next.js frontend and API routes.
+    * `/services/workers`: Contains the standalone BullMQ worker processes.
+* **DONE:** Each service now has its own `package.json` to manage service-specific dependencies.
+* **DONE:** Implemented a root `package.json` with `pnpm` workspaces and shared scripts (e.g., `concurrently` to run services together).
+* **DONE:** Created a `packages/shared` directory for code shared between services (e.g., queue definitions).
+* **DONE:** Updated TypeScript configuration (`tsconfig.json`) to a base/extended model suitable for a monorepo.
+* **DONE:** Corrected environment variable loading for both the `webapp` (using `dotenv-cli`) and `workers` (using Node's `--env-file` flag) to use a single root `.env.local` file.
+
 **(Preview) Next Phase:**
 * **Phase 2: Audio Synthesis & Basic Playback (Weeks 5-7):**
-    * **Next up:** Set up a new BullMQ queue/worker for Text-to-Speech (TTS) processing.
-    * The TTS worker will take a `podcastId` as input.
-    * It will fetch the script from the `podcasts` table.
-    * It will call the Gemini TTS API to synthesize the audio.
-    * It will save the generated audio file to a new Supabase Storage bucket (e.g., `podcasts-audio`).
-    * It will update the `podcasts` table with the audio file URL and other metadata (e.g., duration).
-    * A basic audio player component will be created in the frontend to play the generated podcast.
+    * **Next up:** Set up a new BullMQ queue/worker for Text-to-Speech (TTS) processing.
+    * The TTS worker will take a `podcastId` as input.
+    * It will fetch the script from the `podcasts` table.
+    * It will call the Gemini TTS API to synthesize the audio.
+    * It will save the generated audio file to a new Supabase Storage bucket (e.g., `podcasts-audio`).
+    * It will update the `podcasts` table with the audio file URL and other metadata (e.g., duration).
+    * A basic audio player component will be created in the frontend to play the generated podcast.
 
 ---
 

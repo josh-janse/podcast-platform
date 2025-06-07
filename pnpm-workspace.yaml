@@ -1,0 +1,4 @@
+# pnpm-workspace.yaml
+packages:
+  - 'services/*'
+  - 'packages/*' # For shared packages

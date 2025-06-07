@@ -1,53 +1,20 @@
 {
-  "name": "podcast-platform",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "dev:worker": "node -r dotenv/config src/workers/podcastGenerationWorker.js",
-    "build:worker": "tsc src/workers/podcastGenerationWorker.ts --outDir dist/workers --module commonjs --esModuleInterop --skipLibCheck --target es2020",
-    "start:worker": "node dist/workers/podcastGenerationWorker.js"
-  },
-  "dependencies": {
-    "@google/genai": "^1.3.0",
-    "@hookform/resolvers": "^5.0.1",
-    "@radix-ui/react-dialog": "^1.1.14",
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-progress": "^1.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@supabase/ssr": "^0.6.1",
-    "@supabase/supabase-js": "^2.49.8",
-    "bullmq": "^5.53.1",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "express": "^5.1.0",
-    "lucide-react": "^0.511.0",
-    "next": "15.3.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-hook-form": "^7.56.4",
-    "redis": "^5.1.1",
-    "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1",
-    "tailwind-merge": "^3.3.0",
-    "wavesurfer.js": "^7.9.5",
-    "zod": "^3.25.42",
-    "zustand": "^5.0.5"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.3",
-    "tailwindcss": "^4",
-    "ts-node": "^10.9.2",
-    "tw-animate-css": "^1.3.2",
-    "typescript": "^5"
-  }
+    "name": "podcast-platform-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Monorepo for the Interactive Podcasting Platform",
+    "scripts": {
+        "webapp": "pnpm --filter webapp",
+        "workers": "pnpm --filter workers",
+        "dev": "concurrently \"pnpm --filter webapp dev\" \"pnpm --filter workers dev\"",
+        "build": "pnpm --filter webapp build"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2",
+        "dotenv-cli": "^8.0.0",
+        "eslint": "^9.0.0",
+        "typescript": "^5"
+    },
+    "author": "Joshua Janse van Rensburg",
+    "license": "ISC"
 }

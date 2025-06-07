@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.base.json", // Extends the root base config
+    "compilerOptions": {
+        "module": "commonjs", // Workers typically use CommonJS
+        "outDir": "dist", // Compile JavaScript files to a 'dist' folder
+        "noEmit": false // We DO want to emit JS files for the worker
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.js"
+    ], // Include all files in the worker's src folder
+    "exclude": [
+        "node_modules"
+    ]
+}
